@@ -1,0 +1,24 @@
+{{template "base" .}}
+{{define "scripts"}}{{end}}
+{{define "title"}}
+  Anmeldungen
+{{end}}
+{{define "main"}}
+      <h1>Datum: {{.Date}}</h1>
+      {{if not .Users}}
+        <h3>Secilen Tarih icin Kayitlar bulunmamakta | Für das ausgewählte Datum sind keine Anmeldungen vorhanden</h3>
+      {{else}}
+          <h3>Angemeldete Benutzer:</h3>
+          <ul class="list-group m-3">
+          {{range .Users}}
+            <li class="list-group-item">
+              {{.FirstName}}
+              {{.LastName}},
+              {{.Phone}},
+              {{.Address}},
+              {{.Time}}
+            </li>
+          {{end}}
+          </ul>
+      {{end}}
+{{end}}

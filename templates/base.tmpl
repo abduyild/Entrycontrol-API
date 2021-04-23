@@ -1,0 +1,57 @@
+{{define "base"}}
+
+<!doctype html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{{template "title" .}}
+    - CamiiOnline</title>
+  <link rel="stylesheet" href="static/css/bootstrap.min.css" media="print" onload="this.media='all'">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/site.webmanifest">
+  <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/icons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-config" content="/icons/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <script src="static/js/jquery-3.5.1.slim.min.js"></script>
+  <script src="static/js/bootstrap.bundle.min.js"></script>
+  {{template "scripts" .}}
+</head>
+<body>
+  
+  <div class="mb-3">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+        <a class="navbar-brand">
+          <img src="/icons/android-chrome-192x192.png" width="30" height="30" class="d-inline-block align-top" alt=""> CamiiOnline <span class="badge badge-warning">Beta</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link active" href="/">Startseite<span class="sr-only">(current)</span></a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <main style="padding-bottom:90px;">
+    <div class="container">
+      {{template "main" .}}
+    </div>
+  </main>
+  <div class="fixed-bottom">
+    <div class="container">
+      {{template "footer" .}}
+    </div>
+  </div>
+</body>
+
+</html>
+
+{{end}}

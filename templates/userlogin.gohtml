@@ -1,0 +1,103 @@
+{{template "base" .}}
+
+{{define "scripts"}}
+<!-- Scripts -->
+  <script>
+    $(document).ready(function () {
+      if (window.location.href.indexOf("?wrong") > -1) {
+        document.getElementById('wrong').style.display = '';
+      } else {
+        document.getElementById('wrong').style.display = 'none';
+      }
+    });
+  </script>
+{{end}}
+
+{{define "title"}}
+  Login
+{{end}}
+
+{{define "main"}}
+
+  <div id="wrong" class="alert alert-danger" role="alert" style="display: none;">
+    Verdiginiz Camii-ID gecerli degil! | Ihre eingegebene Moschee-ID ist ungültig!
+  </div>
+  <div class="card">
+    <div class="card-header" id="User">
+      <h2 class="mb-0">
+        Camii-ID ve istediginiz tarihi girin
+      </h2>
+    </div>
+    <div class="card-body">
+      <form method="get" action="/">
+        <label for="mosqueid">Camii-ID | Moschee-ID</label>
+        <br>
+        <input type="text" id="mosqueid" name="mosqueid" required>
+        <br>
+        <script>
+        window.addEventListener("pageshow", function (event) {
+          var today = new Date();
+          var dd = today.getDate();
+          var mm = today.getMonth() + 1; //January is 0!
+          var yyyy = today.getFullYear();
+          if (dd < 10) {
+            dd = '0' + dd
+          }
+          if (mm < 10) {
+            mm = '0' + mm
+          }
+          today = yyyy + '-' + mm + '-' + dd;
+          var d = new Date();
+          d.setDate(d.getDate() - 30);
+          var y = d.getFullYear();
+          var m = d.getMonth() +1;
+          var da = d.getDate();
+          if (da < 10) {
+            da = '0' + da
+          }
+          if (m < 10) {
+            m = '0' + m
+          }
+          d = y + '-' + m + '-' + da;
+          document.getElementById("date").setAttribute("min", d);
+          document.getElementById("date").setAttribute("max", today);
+        });
+      </script>
+      Tarih | Datum:
+      <input type="date" id="date" name="date" min='2020-01-01' max='2020-08-01' required>
+        <br><br><br>
+        <button type="submit" class="btn btn-outline-dark">Giris Yap | Anmelden</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="jumbotron">
+        <h1 class="display-4">Was ist "camii.online"?</h1>
+        <p class="lead">"camii.online" bietet Muslimen die Möglichkeit, sich datenschutzkonform bequem für Gebete anzumelden.</p>
+        <hr class="my-4">
+          Ihre Daten sind lediglich für den angemeldeten Tag sichtbar!
+          <br>
+          Sie sind flexibel und können sich über die gleiche Plattform für weitere Moscheen anmelden.
+          <br>
+          Sie müssen nicht vor jedem Moschebesuch schlange stehen, Ihre Handynummer suchen und sich auf einer Liste eintragen, welche nicht Datenschutzgerecht aufbewahrt wird.
+          <br>
+          <br>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="jumbotron">
+        <h1 class="display-4">"camii.online" nedir?</h1>
+        <p class="lead">"camii.online" müslümanlara Namaz vakitlerine online verileriniz koruma altinda olarak kayit olma imkanini sagliyor.</p>
+        <hr class="my-4">
+          Verileriniz sadece kayitli günde gözüküyor!
+          <br>
+          Ayni Sayfadan degisik Camiilere kayit olabilirsiniz.
+          <br>
+          Her vakit namazdan önce sira bekleyip, verilerinizi güvensiz ellere vermenize artik gerek yok.
+          <br>
+      </div>
+    </div>
+  </div>
+{{end}}
