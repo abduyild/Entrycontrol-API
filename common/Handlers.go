@@ -9,8 +9,9 @@ import (
 )
 
 type TemplateStruct struct {
-	Users []repos.User
-	Date  string
+	Users     []repos.User
+	Date      string
+	Locations []string
 }
 
 // Handler for Login Page used with POST by submitting Loginform
@@ -27,14 +28,17 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 			}
 			date = formatDate(date)
 			users, err := repos.GetEntriesForDate(mosque, date)
+			locations := getLocations(users)
 			if err != nil {
 				http.Redirect(response, request, "/?wrong", 302)
 			} else {
 				templateStruct := TemplateStruct{
-					Users: users,
-					Date:  repos.GetCurrentDate(),
+					Users:     users,
+					Date:      repos.GetCurrentDate(),
+					Locations: locations,
 				}
-				t, _ := template.ParseFiles("templates/getRegistrations.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
+				t, err := template.ParseFiles("templates/getRegistrations.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
+				print("************************************:", err)
 				t.Execute(response, templateStruct)
 			}
 		}
@@ -47,4 +51,24 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 func formatDate(date string) string {
 	dates := strings.Split(date, "-")
 	return dates[2] + "-" + dates[1] + "-" + dates[0]
+}
+
+func getLocations(users []repos.User) []string {
+	var locations []string
+	for _, user := range users {
+		location := user.Location
+		if !contains(location, locations) {
+			locations = append(locations, location)
+		}
+	}
+	return locations
+}
+
+func contains(location string, locations []string) bool {
+	for _, loc := range locations {
+		if location == loc {
+			return true
+		}
+	}
+	return false
 }

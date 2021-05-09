@@ -3,15 +3,33 @@ package common
 import (
 	"net/http"
 	"pi-software/repos"
+	"strings"
 )
 
 func SubmitAttendant(response http.ResponseWriter, request *http.Request) {
-	mosque := request.URL.Query().Get("mosque")
-	firstName := request.URL.Query().Get("fname")
-	lastName := request.URL.Query().Get("lname")
-	phone := request.URL.Query().Get("phone")
-	address := request.URL.Query().Get("address")
-	time := request.URL.Query().Get("time")
-	user := repos.StringToUser(firstName, lastName, phone, address, time)
-	repos.PushToDB(mosque, user)
+	query := request.URL.Query()
+	mosque := sanitize(query.Get("mosque"))
+	firstName := sanitize(query.Get("fname"))
+	lastName := sanitize(query.Get("lname"))
+	phone := sanitize(query.Get("phone"))
+	address := sanitize(query.Get("address"))
+	time := sanitize(query.Get("time"))
+	location := sanitize(query.Get("location"))
+	if isValid(mosque, firstName, lastName, phone, address, time, location) {
+		user := repos.StringToUser(firstName, lastName, phone, address, time, location)
+		repos.PushToDB(mosque, user)
+	}
+}
+
+func isValid(values ...string) bool {
+	for _, value := range values {
+		if value == "" {
+			return false
+		}
+	}
+	return true
+}
+
+func sanitize(input string) string {
+	return strings.ReplaceAll(input, "+", " ")
 }

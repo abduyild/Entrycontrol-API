@@ -1,24 +1,55 @@
 {{template "base" .}}
-{{define "scripts"}}{{end}}
+{{define "scripts"}}
+<script>
+$(function() {
+  $("#filterUsers").change(function() {
+    var rex = $('#filterUsers').val();
+    if (rex != "all") $("table tr").show().not('#' + rex).hide();
+    else $("table tr").show();
+  });
+});
+</script>
+{{end}}
 {{define "title"}}
   Anmeldungen
 {{end}}
 {{define "main"}}
+      {{$locations := .Locations}}
       <h1>Datum: {{.Date}}</h1>
       {{if not .Users}}
         <h3>Secilen Tarih icin Kayitlar bulunmamakta | Für das ausgewählte Datum sind keine Anmeldungen vorhanden</h3>
       {{else}}
-          <h3>Angemeldete Benutzer:</h3>
-          <ul class="list-group m-3">
-          {{range .Users}}
-            <li class="list-group-item">
-              {{.FirstName}}
-              {{.LastName}},
-              {{.Phone}},
-              {{.Address}},
-              {{.Time}}
-            </li>
+          {{if not $locations}}
+          {{else}}
+          <select id='filterUsers' class="dropdown-menu">
+            <option value="all" selected class="dropdown-item">Alle</option>
+            {{range $locations}}
+            <option value="{{.}}" class="dropdown-item">{{.}}</option>
+            {{end}}
+          </select>
           {{end}}
-          </ul>
+          <h3>Angemeldete Benutzer:</h3>
+          <table class="table">
+            <thead class="thead-dark">
+            <tr>
+              <th>Vorname</th>
+              <th>Nachname</th>
+              <th>Telefonnummer</th>
+              <th>Addresse</th>
+              <th>Uhrzeit</th>
+              <th>Platz</th>
+            </tr>
+            </thead>
+          {{range .Users}}
+            <tr>
+              <td>{{.FirstName}}</td>
+              <td>{{.LastName}}</td>
+              <td>{{.Phone}}</td>
+              <td>{{.Address}}</td>
+              <td>{{.Time}}</td>
+              <td>{{.Location}}</td>
+            </tr>
+          {{end}}
+          </table>
       {{end}}
 {{end}}

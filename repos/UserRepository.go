@@ -17,6 +17,7 @@ type User struct {
 	Phone     string `bson:"Phone" json:"Phone"`
 	Address   string `bson:"Address" json:"Address"`
 	Time      string `bson:"Time" json:"Time"`
+	Location  string `bson:"Location" json:"Location"`
 }
 
 var clientOptions *options.ClientOptions
@@ -71,24 +72,26 @@ func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
 	return users, nil
 }
 
-func PushToDB(dbname string, user User) {
-	db := getDB(dbname)
+func PushToDB(mosque string, user User) {
+	db := getDB(mosque)
 	db.Collection(GetCurrentDate()).InsertOne(context.TODO(), user)
 }
 
 func GetCurrentDate() string {
 	currentTime := time.Now()
+	day := fmt.Sprintf("%02d", currentTime.Day())
 	month := fmt.Sprintf("%02d", int(currentTime.Month()))
-	return strconv.Itoa(currentTime.Day()) + "-" + month + "-" + strconv.Itoa(currentTime.Year())
+	return day + "-" + month + "-" + strconv.Itoa(currentTime.Year())
 }
 
-func StringToUser(firstName string, lastName string, phone string, address string, time string) User {
+func StringToUser(firstName string, lastName string, phone string, address string, time string, location string) User {
 	user := User{
 		FirstName: firstName,
 		LastName:  lastName,
 		Phone:     phone,
 		Address:   address,
 		Time:      time,
+		Location:  location,
 	}
 	return user
 }
