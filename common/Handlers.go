@@ -14,23 +14,26 @@ type TemplateStruct struct {
 	Locations []string
 }
 
-// Handler for Login Page used with POST by submitting Loginform
+// Function for handling the input data. Checks the data and if everything is valid prepares the data
 func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	request.ParseForm()
 	mosque := request.URL.Query().Get("mosqueid")
 	date := request.URL.Query().Get("date")
 	if mosque != "" && date != "" {
 		if !repos.DoesDBExist(mosque) {
-			http.Redirect(response, request, "/?wrong", 302)
+			http.Redirect(response, request, "/?wrong", http.StatusFound)
+			return
 		} else {
 			if ok, _ := regexp.MatchString("\\d\\d\\d\\d-\\d\\d-\\d\\d", date); !ok {
+				http.Redirect(response, request, "/?wrong", http.StatusFound)
 				return
 			}
 			date = formatDate(date)
 			users, err := repos.GetEntriesForDate(mosque, date)
 			locations := getLocations(users)
 			if err != nil {
-				http.Redirect(response, request, "/?wrong", 302)
+				http.Redirect(response, request, "/?wrong", http.StatusFound)
+				return
 			} else {
 				templateStruct := TemplateStruct{
 					Users:     users,
@@ -38,7 +41,10 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 					Locations: locations,
 				}
 				t, err := template.ParseFiles("templates/getRegistrations.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
-				print("************************************:", err)
+				if err != nil {
+					print(err)
+					return
+				}
 				t.Execute(response, templateStruct)
 			}
 		}
