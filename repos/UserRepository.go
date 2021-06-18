@@ -48,7 +48,6 @@ func getDB(dbname string) *mongo.Database {
 func DoesDBExist(mosqueid string) bool {
 	names, err := dbclient.ListDatabaseNames(context.TODO(), bson.D{{}})
 	if err != nil {
-		log.Println("no collections in database")
 		return false
 	}
 	for _, name := range names {
@@ -56,7 +55,6 @@ func DoesDBExist(mosqueid string) bool {
 			return true
 		}
 	}
-	log.Println("could not find mosque")
 	return false
 }
 

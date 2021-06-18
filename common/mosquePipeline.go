@@ -19,7 +19,6 @@ func SubmitAttendant(response http.ResponseWriter, request *http.Request) {
 	log.Println(query)
 	if isValid(mosque, firstName, lastName, phone, address, time, location) {
 		user := repos.StringToUser(firstName, lastName, phone, address, time, location)
-		log.Println("now pushing")
 		repos.PushToDB(mosque, user)
 	}
 }

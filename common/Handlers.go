@@ -22,11 +22,10 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	date := request.URL.Query().Get("date")
 	if mosque != "" && date != "" {
 		if !repos.DoesDBExist(mosque) {
-			log.Println("mosque not found")
 			http.Redirect(response, request, "/?wrong", http.StatusFound)
 			return
 		} else {
-			if ok, _ := regexp.MatchString("\\d\\d\\d\\d-\\d\\d-\\d\\d", date); !ok {
+			if ok, _ := regexp.MatchString("\\d\\d-\\d\\d", date); !ok {
 				http.Redirect(response, request, "/?wrong", http.StatusFound)
 				return
 			}
@@ -34,7 +33,6 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 			users, err := repos.GetEntriesForDate(mosque, date)
 			if err != nil {
 				// TODO this is not an error, this only shows that there is no entry for that date
-				log.Println("mosque-date")
 				http.Redirect(response, request, "/?wrong", http.StatusFound)
 				return
 			} else {
