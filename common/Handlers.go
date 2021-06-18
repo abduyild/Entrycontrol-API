@@ -25,7 +25,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 			http.Redirect(response, request, "/?wrong", http.StatusFound)
 			return
 		} else {
-			if ok, _ := regexp.MatchString("\\d\\d-\\d\\d", date); !ok {
+			if ok, _ := regexp.MatchString("\\d\\d:\\d\\d", date); !ok {
 				http.Redirect(response, request, "/?wrong", http.StatusFound)
 				return
 			}
