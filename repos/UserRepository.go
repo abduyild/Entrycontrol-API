@@ -3,6 +3,7 @@ package repos
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -47,6 +48,7 @@ func getDB(dbname string) *mongo.Database {
 func DoesDBExist(mosqueid string) bool {
 	names, err := dbclient.ListDatabaseNames(context.TODO(), bson.D{{}})
 	if err != nil {
+		log.Println("no collections in database")
 		return false
 	}
 	for _, name := range names {
@@ -54,6 +56,7 @@ func DoesDBExist(mosqueid string) bool {
 			return true
 		}
 	}
+	log.Println("could not find mosque")
 	return false
 }
 
@@ -74,7 +77,10 @@ func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
 
 func PushToDB(mosque string, user User) {
 	db := getDB(mosque)
-	db.Collection(GetCurrentDate()).InsertOne(context.TODO(), user)
+	_, err := db.Collection(GetCurrentDate()).InsertOne(context.TODO(), user)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func GetCurrentDate() string {
