@@ -4,11 +4,12 @@ import (
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"strconv"
 	"time"
 
@@ -96,42 +97,48 @@ func GetCurrentDate() string {
 	return day + "-" + month + "-" + strconv.Itoa(currentTime.Year())
 }
 
-func StringToUser(firstName string, lastName string, phone string, address string, time string, location string) User {
+func getTime() string {
+	return time.Now().Format("15:04")
+}
+
+func StringToUser(firstName string, lastName string, phone string, address string, location string) User {
 	user := User{
 		FirstName: firstName,
 		LastName:  lastName,
 		Phone:     phone,
 		Address:   address,
-		Time:      time,
+		Time:      getTime(),
 		Location:  location,
 	}
 	return user
 }
 
-func getHash() string {
-	return os.Getenv("hash")
+func getHash(passphrase string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(passphrase))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 func GetEncryptedUser(user User, passphrase string) User {
 	encryptedUser := user
 	encryptedUser.FirstName = encrypt(user.FirstName, passphrase)
-	encryptedUser.LastName = encrypt(user.FirstName, passphrase)
-	encryptedUser.Phone = encrypt(user.FirstName, passphrase)
-	encryptedUser.Address = encrypt(user.FirstName, passphrase)
+	encryptedUser.LastName = encrypt(user.LastName, passphrase)
+	encryptedUser.Phone = encrypt(user.Phone, passphrase)
+	encryptedUser.Address = encrypt(user.Address, passphrase)
 	return encryptedUser
 }
 
 func GetDecryptedUser(user User, passphrase string) User {
 	decryptedUser := user
 	decryptedUser.FirstName = decrypt(user.FirstName, passphrase)
-	decryptedUser.LastName = decrypt(user.FirstName, passphrase)
-	decryptedUser.Phone = decrypt(user.FirstName, passphrase)
-	decryptedUser.Address = decrypt(user.FirstName, passphrase)
+	decryptedUser.LastName = decrypt(user.LastName, passphrase)
+	decryptedUser.Phone = decrypt(user.Phone, passphrase)
+	decryptedUser.Address = decrypt(user.Address, passphrase)
 	return decryptedUser
 }
 
 func encrypt(plaintext string, passphrase string) string {
-	block, _ := aes.NewCipher([]byte(getHash()))
+	block, _ := aes.NewCipher([]byte(getHash(passphrase)))
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
 		panic(err.Error())
@@ -143,7 +150,7 @@ func encrypt(plaintext string, passphrase string) string {
 }
 
 func decrypt(ciphertext string, passphrase string) string {
-	key := []byte(getHash())
+	key := []byte(getHash(passphrase))
 	block, _ := aes.NewCipher(key)
 	gcm, _ := cipher.NewGCM(block)
 	nonceSize := gcm.NonceSize()
