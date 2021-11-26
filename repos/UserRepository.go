@@ -2,8 +2,13 @@ package repos
 
 import (
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -27,8 +32,10 @@ var dbclient *mongo.Client
 func InitDB() error {
 	// Define Address of Database
 	clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
+	// Define connection context to have a timeout on connections
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	// Try to connect to Database, save error if one is thrown
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+	client, err := mongo.Connect(ctx, clientOptions)
 	// If there was an error connecting to the DB (DB not running, wrong URI, ...) return the error
 	if err != nil {
 		return err
@@ -46,7 +53,8 @@ func getDB(dbname string) *mongo.Database {
 }
 
 func DoesDBExist(mosqueid string) bool {
-	names, err := dbclient.ListDatabaseNames(context.TODO(), bson.D{{}})
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	names, err := dbclient.ListDatabaseNames(ctx, bson.D{{}})
 	if err != nil {
 		return false
 	}
@@ -68,7 +76,7 @@ func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
 	}
 	for cur.Next(context.TODO()) {
 		cur.Decode(&user)
-		users = append(users, user)
+		users = append(users, GetDecryptedUser(user, mosqueid))
 	}
 	return users, nil
 }
@@ -98,4 +106,48 @@ func StringToUser(firstName string, lastName string, phone string, address strin
 		Location:  location,
 	}
 	return user
+}
+
+func getHash() string {
+	return os.Getenv("hash")
+}
+
+func GetEncryptedUser(user User, passphrase string) User {
+	encryptedUser := user
+	encryptedUser.FirstName = encrypt(user.FirstName, passphrase)
+	encryptedUser.LastName = encrypt(user.FirstName, passphrase)
+	encryptedUser.Phone = encrypt(user.FirstName, passphrase)
+	encryptedUser.Address = encrypt(user.FirstName, passphrase)
+	return encryptedUser
+}
+
+func GetDecryptedUser(user User, passphrase string) User {
+	decryptedUser := user
+	decryptedUser.FirstName = decrypt(user.FirstName, passphrase)
+	decryptedUser.LastName = decrypt(user.FirstName, passphrase)
+	decryptedUser.Phone = decrypt(user.FirstName, passphrase)
+	decryptedUser.Address = decrypt(user.FirstName, passphrase)
+	return decryptedUser
+}
+
+func encrypt(plaintext string, passphrase string) string {
+	block, _ := aes.NewCipher([]byte(getHash()))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	io.ReadFull(rand.Reader, nonce)
+	ciphertext := string(gcm.Seal(nonce, nonce, []byte(plaintext), nil))
+	return ciphertext
+}
+
+func decrypt(ciphertext string, passphrase string) string {
+	key := []byte(getHash())
+	block, _ := aes.NewCipher(key)
+	gcm, _ := cipher.NewGCM(block)
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+	plaintext, _ := gcm.Open(nil, []byte(nonce), []byte(ciphertext), nil)
+	return string(plaintext)
 }

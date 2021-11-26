@@ -102,3 +102,5 @@ tags
 
 *.key
 main.go
+.DS_Store
+static/.DS_Store

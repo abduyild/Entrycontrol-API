@@ -15,9 +15,9 @@ func SubmitAttendant(response http.ResponseWriter, request *http.Request) {
 	address := sanitize(query.Get("address"))
 	time := sanitize(query.Get("time"))
 	location := sanitize(query.Get("location"))
-	if isValid(mosque, firstName, lastName, phone, address, time, location) {
+	if isValid(mosque, firstName, lastName, phone, address, time, location) && repos.DoesDBExist(mosque) {
 		user := repos.StringToUser(firstName, lastName, phone, address, time, location)
-		repos.PushToDB(mosque, user)
+		repos.PushToDB(mosque, repos.GetEncryptedUser(user, mosque))
 	}
 }
 
