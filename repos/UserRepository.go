@@ -34,7 +34,8 @@ func InitDB() error {
 	// Define Address of Database
 	clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	// Define connection context to have a timeout on connections
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	// Try to connect to Database, save error if one is thrown
 	client, err := mongo.Connect(ctx, clientOptions)
 	// If there was an error connecting to the DB (DB not running, wrong URI, ...) return the error
@@ -54,7 +55,8 @@ func getDB(dbname string) *mongo.Database {
 }
 
 func DoesDBExist(mosqueid string) bool {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	names, err := dbclient.ListDatabaseNames(ctx, bson.D{{}})
 	if err != nil {
 		return false
@@ -71,7 +73,9 @@ func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
 	collection := getDB(mosqueid).Collection(date)
 	var user User
 	var users []User
-	cur, err := collection.Find(context.TODO(), bson.D{})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	cur, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +88,9 @@ func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
 
 func PushToDB(mosque string, user User) {
 	db := getDB(mosque)
-	_, err := db.Collection(GetCurrentDate()).InsertOne(context.TODO(), user)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	_, err := db.Collection(GetCurrentDate()).InsertOne(ctx, user)
 	if err != nil {
 		log.Println(err)
 	}
