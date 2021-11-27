@@ -41,7 +41,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 				locations := getLocations(users)
 				templateStruct := TemplateStruct{
 					Users:     users,
-					Date:      repos.GetCurrentDate(),
+					Date:      date,
 					Locations: locations,
 				}
 				t, err := template.ParseFiles("templates/getRegistrations.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
