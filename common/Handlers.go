@@ -58,6 +58,35 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// Function for handling the input data. Checks the data and if everything is valid prepares the data
+func MosqueHandler(response http.ResponseWriter, request *http.Request) {
+	request.ParseForm()
+	mosqueid := request.URL.Query().Get("mosqueid")
+	mosquename := request.URL.Query().Get("mosquename")
+	password := request.URL.Query().Get("password")
+	location := request.URL.Query().Get("location")
+
+	if isValid(mosqueid, mosquename, password) {
+		if checkPassword(password) {
+			if !repos.DoesDBExist(mosqueid) {
+				mosque := repos.Mosque{Name: mosquename, Location: location}
+				repos.AddMosque(mosqueid, mosque)
+				http.Redirect(response, request, "/addMosque?success", http.StatusFound)
+				return
+			} else {
+				http.Redirect(response, request, "/addMosque?exists", http.StatusFound)
+				return
+			}
+		} else {
+			http.Redirect(response, request, "/addMosque?wrong", http.StatusFound)
+			return
+		}
+	} else {
+		t, _ := template.ParseFiles("templates/addmosque.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
+		t.Execute(response, nil)
+	}
+}
+
 func formatDate(date string) string {
 	dates := strings.Split(date, "-")
 	return dates[2] + "-" + dates[1] + "-" + dates[0]

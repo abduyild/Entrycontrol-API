@@ -1,0 +1,66 @@
+{{template "base" .}}
+
+{{define "scripts"}}
+<!-- Scripts -->
+  <script>
+    $(document).ready(function () {
+      if (window.location.href.indexOf("?wrong") > -1) {
+        document.getElementById('wrong').style.display = '';
+        document.getElementById('success').style.display = 'none';
+        document.getElementById('exists').style.display = 'none';
+      } else if (window.location.href.indexOf("?success") > -1){
+        document.getElementById('success').style.display = '';
+        document.getElementById('wrong').style.display = 'none';
+        document.getElementById('exists').style.display = 'none';
+      } else if (window.location.href.indexOf("?exists") > -1){
+        document.getElementById('exists').style.display = '';
+        document.getElementById('wrong').style.display = 'none';
+        document.getElementById('success').style.display = 'none';
+      } else {
+        document.getElementById('wrong').style.display = 'none';
+        document.getElementById('success').style.display = 'none';
+        document.getElementById('exists').style.display = 'none';
+      }
+    });
+  </script>
+{{end}}
+
+{{define "title"}}
+  Moschee hinzufügen
+{{end}}
+
+{{define "main"}}
+  <div id="wrong" class="alert alert-danger" role="alert" style="display: none;">
+    Verdiginiz bilgiler hatali! | Ihre Eingaben sind ungültig!
+  </div>
+  <div id="exists" class="alert alert-danger" role="alert" style="display: none;">
+    Verdiginiz camii henüz mevcut! | Die eingegebene Moschee existiert bereits!
+  </div>
+  <div id="success" class="alert alert-success" role="alert" style="display: none;">
+    Camii eklenildi! | Die Moschee wurde eingefgügt!
+  </div>
+  <div class="card">
+    <div class="card-header" id="User">
+      <h2 class="mb-0">
+        Camii-ID ve istediginiz tarihi girin
+      </h2>
+    </div>
+    <div class="card-body">
+      <form method="get" action="/">
+        <label for="mosqueid">Camii-ID | Moschee-ID</label>
+        <br>
+        <input type="text" id="mosqueid" name="mosqueid" required>
+        <br>
+        <label for="mosquename">Camii-Ismi | Moscheename</label>
+        <br>
+        <input type="text" id="mosquename" name="mosquename" required>
+        <br>
+        <label for="password">Sifre | Passwort:</label>
+        <br>
+        <input type="password" id="password" name="password"required>
+        <br><br><br>
+        <button type="submit" class="btn btn-outline-dark">Camii ekle | Moschee hinzufügen</button>
+      </form>
+    </div>
+  </div>
+{{end}}

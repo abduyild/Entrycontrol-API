@@ -27,6 +27,11 @@ type User struct {
 	Location  string `bson:"Location" json:"Location"`
 }
 
+type Mosque struct {
+	Name     string `bson:"Name" json:"Name"`
+	Location string `bson:"Location" json:"Location"`
+}
+
 var clientOptions *options.ClientOptions
 var dbclient *mongo.Client
 
@@ -91,6 +96,16 @@ func PushToDB(mosque string, user User) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	_, err := db.Collection(GetCurrentDate()).InsertOne(ctx, user)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func AddMosque(mosqueid string, mosque Mosque) {
+	db := getDB(mosqueid)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	_, err := db.Collection(GetCurrentDate()).InsertOne(ctx, mosque)
 	if err != nil {
 		log.Println(err)
 	}

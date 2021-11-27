@@ -17,9 +17,10 @@ func main() {
 	}
 	router := mux.NewRouter()
 	router.HandleFunc("/", common.LoginHandler)
+	router.HandleFunc("/addMosque", common.MosqueHandler)
 	router.HandleFunc("/addUser", common.SubmitAttendant)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir("icons"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("/static"))))
+	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir("/icons"))))
 	http.Handle("/", router)
 	log.Println("All handlers set and ready to listen")
 	log.Fatal(http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/camii.online/fullchain.pem", "/etc/letsencrypt/live/camii.online/privkey.pem", nil))
