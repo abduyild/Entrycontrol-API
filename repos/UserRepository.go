@@ -101,14 +101,12 @@ func PushToDB(mosque string, user User) {
 	}
 }
 
-func AddMosque(mosqueid string, mosque Mosque) {
+func AddMosque(mosqueid string, mosque Mosque) bool {
 	db := getDB(mosqueid)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	_, err := db.Collection(GetCurrentDate()).InsertOne(ctx, mosque)
-	if err != nil {
-		log.Println(err)
-	}
+	return err == nil
 }
 
 func GetCurrentDate() string {

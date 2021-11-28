@@ -7,6 +7,7 @@ require (
 	4d63.com/gochecknoinits v0.0.0-20200108094044-eb73b47b9fc4 // indirect
 	github.com/alecthomas/gocyclo v0.0.0-20150208221726-aa8f8b160214 // indirect
 	github.com/alexkohler/nakedret v1.0.0 // indirect
+	github.com/google/uuid v1.3.0
 	github.com/gordonklaus/ineffassign v0.0.0-20200309095847-7953dde2c7bf // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/securecookie v1.1.1

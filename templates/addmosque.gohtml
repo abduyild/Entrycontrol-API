@@ -37,7 +37,8 @@
     Verdiginiz camii henüz mevcut! | Die eingegebene Moschee existiert bereits!
   </div>
   <div id="success" class="alert alert-success" role="alert" style="display: none;">
-    Camii eklenildi! | Die Moschee wurde eingefgügt!
+    Camii eklenildi! | Die Moschee wurde eingefgügt! <br>
+    {{.}}
   </div>
   <div class="card">
     <div class="card-header" id="User">
@@ -47,10 +48,6 @@
     </div>
     <div class="card-body">
       <form method="get" action="/">
-        <label for="mosqueid">Camii-ID | Moschee-ID</label>
-        <br>
-        <input type="text" id="mosqueid" name="mosqueid" required>
-        <br>
         <label for="mosquename">Camii-Ismi | Moscheename</label>
         <br>
         <input type="text" id="mosquename" name="mosquename" required>

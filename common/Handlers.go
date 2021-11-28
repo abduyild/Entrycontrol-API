@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/google/uuid"
 )
 
 type TemplateStruct struct {
@@ -22,7 +24,6 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	date := request.URL.Query().Get("date")
 	if mosque != "" && date != "" {
 		if !repos.DoesDBExist(mosque) {
-			log.Println("mosque not found")
 			http.Redirect(response, request, "/?wrong", http.StatusFound)
 			return
 		} else {
@@ -61,13 +62,14 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 // Function for handling the input data. Checks the data and if everything is valid prepares the data
 func MosqueHandler(response http.ResponseWriter, request *http.Request) {
 	request.ParseForm()
-	mosqueid := request.URL.Query().Get("mosqueid")
 	mosquename := request.URL.Query().Get("mosquename")
 	password := request.URL.Query().Get("password")
 	location := request.URL.Query().Get("location")
+	mosqueid := ""
 
-	if isValid(mosqueid, mosquename, password) {
+	if isValid(mosquename, password) {
 		if checkPassword(password) {
+			mosqueid = strings.Replace(uuid.NewString(), "-", "", -1)
 			if !repos.DoesDBExist(mosqueid) {
 				mosque := repos.Mosque{Name: mosquename, Location: location}
 				repos.AddMosque(mosqueid, mosque)
@@ -83,7 +85,7 @@ func MosqueHandler(response http.ResponseWriter, request *http.Request) {
 		}
 	} else {
 		t, _ := template.ParseFiles("templates/addmosque.gohtml", "templates/base.tmpl", "templates/footer.tmpl")
-		t.Execute(response, nil)
+		t.Execute(response, mosqueid)
 	}
 }
 
