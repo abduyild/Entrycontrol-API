@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -74,19 +76,37 @@ func DoesDBExist(mosqueid string) bool {
 	return false
 }
 
+func isValidDate(date string) bool {
+	if ok, _ := regexp.Match("\\d\\d-\\d\\d-\\d\\d\\d\\d", []byte(date)); ok {
+		dates := strings.Split(date, "-")
+		day := dates[0]
+		month := dates[0]
+		year := dates[0]
+		parsedTime, _ := time.Parse("2006-01-02", year+"-"+month+"-"+day)
+		limit := time.Now().AddDate(0, -1, 0)
+		if parsedTime.After(limit) {
+			return true
+		}
+	}
+	return false
+}
+
 func GetEntriesForDate(mosqueid string, date string) ([]User, error) {
-	collection := getDB(mosqueid).Collection(date)
 	var user User
 	var users []User
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	cur, err := collection.Find(ctx, bson.D{})
-	if err != nil {
-		return nil, err
-	}
-	for cur.Next(context.TODO()) {
-		cur.Decode(&user)
-		users = append(users, GetDecryptedUser(user, mosqueid))
+	if isValidDate(date) {
+		collection := getDB(mosqueid).Collection(date)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		cur, err := collection.Find(ctx, bson.D{})
+		if err != nil {
+			return nil, err
+		}
+		for cur.Next(context.TODO()) {
+			cur.Decode(&user)
+			users = append(users, GetDecryptedUser(user, mosqueid))
+		}
+		return users, nil
 	}
 	return users, nil
 }
