@@ -4,15 +4,15 @@
 <!-- Scripts -->
   <script>
     $(document).ready(function () {
-      if (window.location.href.indexOf("?wrong") > -1) {
+      if (window.location.href.indexOf("wrong") > -1) {
         document.getElementById('wrong').style.display = '';
         document.getElementById('success').style.display = 'none';
         document.getElementById('exists').style.display = 'none';
-      } else if (window.location.href.indexOf("?success") > -1){
+      } else if (window.location.href.indexOf("success") > -1){
         document.getElementById('success').style.display = '';
         document.getElementById('wrong').style.display = 'none';
         document.getElementById('exists').style.display = 'none';
-      } else if (window.location.href.indexOf("?exists") > -1){
+      } else if (window.location.href.indexOf("exists") > -1){
         document.getElementById('exists').style.display = '';
         document.getElementById('wrong').style.display = 'none';
         document.getElementById('success').style.display = 'none';
@@ -47,10 +47,14 @@
       </h2>
     </div>
     <div class="card-body">
-      <form method="get" action="/">
+      <form method="get" action="/addMosque">
         <label for="mosquename">Camii-Ismi | Moscheename</label>
         <br>
         <input type="text" id="mosquename" name="mosquename" required>
+        <br>
+        <label for="location">Adres | Adresse:</label>
+        <br>
+        <input type="text" id="location" name="location"required>
         <br>
         <label for="password">Sifre | Passwort:</label>
         <br>

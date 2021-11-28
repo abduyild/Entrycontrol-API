@@ -6,6 +6,8 @@ import (
 	"pi-software/repos"
 	"strings"
 
+	b64 "encoding/base64"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,13 +25,9 @@ func SubmitAttendant(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func hashPassword(password string) []byte {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return bytes
-}
-
 func checkPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(os.Getenv("addmosquepw")), hashPassword(password))
+	decodedPassword, _ := b64.StdEncoding.DecodeString(os.Getenv("addmosquepw"))
+	err := bcrypt.CompareHashAndPassword(decodedPassword, []byte(password))
 	return err == nil
 }
 

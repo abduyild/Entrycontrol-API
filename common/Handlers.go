@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"pi-software/repos"
@@ -65,15 +66,15 @@ func MosqueHandler(response http.ResponseWriter, request *http.Request) {
 	mosquename := request.URL.Query().Get("mosquename")
 	password := request.URL.Query().Get("password")
 	location := request.URL.Query().Get("location")
-	mosqueid := ""
+	mosqueid := request.URL.Query().Get("mosqueid")
 
-	if isValid(mosquename, password) {
+	if isValid(mosquename, location, password) {
 		if checkPassword(password) {
 			mosqueid = strings.Replace(uuid.NewString(), "-", "", -1)
 			if !repos.DoesDBExist(mosqueid) {
 				mosque := repos.Mosque{Name: mosquename, Location: location}
 				repos.AddMosque(mosqueid, mosque)
-				http.Redirect(response, request, "/addMosque?success", http.StatusFound)
+				http.Redirect(response, request, fmt.Sprintf("/addMosque?mosqueid=%v&success", mosqueid), http.StatusFound)
 				return
 			} else {
 				http.Redirect(response, request, "/addMosque?exists", http.StatusFound)

@@ -105,7 +105,7 @@ func AddMosque(mosqueid string, mosque Mosque) bool {
 	db := getDB(mosqueid)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	_, err := db.Collection(GetCurrentDate()).InsertOne(ctx, mosque)
+	_, err := db.Collection("info").InsertOne(ctx, mosque)
 	return err == nil
 }
 
