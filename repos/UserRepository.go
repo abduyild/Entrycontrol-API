@@ -80,8 +80,8 @@ func isValidDate(date string) bool {
 	if ok, _ := regexp.Match("\\d\\d-\\d\\d-\\d\\d\\d\\d", []byte(date)); ok {
 		dates := strings.Split(date, "-")
 		day := dates[0]
-		month := dates[0]
-		year := dates[0]
+		month := dates[1]
+		year := dates[2]
 		parsedTime, _ := time.Parse("2006-01-02", year+"-"+month+"-"+day)
 		limit := time.Now().AddDate(0, -1, 0)
 		if parsedTime.After(limit) {
